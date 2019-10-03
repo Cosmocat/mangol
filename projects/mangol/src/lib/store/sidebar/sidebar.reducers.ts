@@ -1,4 +1,5 @@
 import * as SidebarActions from './sidebar.actions';
+import { createReducer, on } from '@ngrx/store';
 
 export interface State {
   hasSidebar: boolean;
@@ -18,26 +19,49 @@ const initialState: State = {
   selectedModule: null
 };
 
-export function sidebarReducer(
-  state = initialState,
-  action: SidebarActions.SidebarActions
-) {
-  switch (action.type) {
-    case SidebarActions.TOGGLE:
-      return { ...state, opened: !state.opened };
-    case SidebarActions.SET_HAS_SIDEBAR:
-      return { ...state, hasSidebar: action.payload };
-    case SidebarActions.SET_MODE:
-      return { ...state, mode: action.payload };
-    case SidebarActions.SET_COLLAPSIBLE:
-      return { ...state, collapsible: action.payload };
-    case SidebarActions.SET_OPENED:
-      return { ...state, opened: action.payload };
-    case SidebarActions.SET_TITLE:
-      return { ...state, title: action.payload };
-    case SidebarActions.SET_SELECTED_MODULE:
-      return { ...state, selectedModule: action.payload };
-    default:
-      return state;
-  }
-}
+
+export const sidebarReducer = createReducer(
+  initialState,
+  on(SidebarActions.toggle, (state) => {
+      return {
+          ...state,
+          opened: !state.opened
+      };
+  }),
+  on(SidebarActions.setHasSidebar, (state, { hasSidebar }) => {
+    return {
+        ...state,
+        hasSidebar: hasSidebar
+    };
+  }),
+  on(SidebarActions.setMode, (state, { mode }) => {
+    return {
+        ...state,
+        mode: mode
+    };
+  }),
+  on(SidebarActions.setCollapsible, (state, { collapsible }) => {
+    return {
+        ...state,
+        collapsible: collapsible
+    };
+  }),
+  on(SidebarActions.setOpened, (state, { opened }) => {
+    return {
+        ...state,
+        opened: opened
+    };
+  }),
+  on(SidebarActions.setTitle, (state, { title }) => {
+    return {
+        ...state,
+        title: title
+    };
+  }),
+  on(SidebarActions.setSelectedModule, (state, { selectedModule }) => {
+    return {
+        ...state,
+        selectedModule: selectedModule
+    };
+  }),
+);

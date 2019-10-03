@@ -1,7 +1,8 @@
 export interface MangolConfigView {
   projection: string;
-  center: [number, number];
+  center: [number, number] | number[];
   zoom: number;
   resolutions?: number[];
   zoomDuration?: number;
+  enableRotation?: boolean;
 }

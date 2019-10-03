@@ -56,8 +56,18 @@ import { environment } from '../environments/environment';
     MatTooltipModule,
     AppRoutingModule,
     MangolModule,
-    StoreModule.forRoot({}),
-    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    StoreModule.forRoot({}, {
+      runtimeChecks: {
+        strictStateImmutability: true,
+        strictActionImmutability: true,
+        strictStateSerializability: true,
+        strictActionSerializability: true
+      }
+    }),
+    !environment.production ? StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: true
+    }) : [],
   ],
   providers: [
     MangolService,

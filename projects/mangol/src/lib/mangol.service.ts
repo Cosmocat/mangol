@@ -44,6 +44,9 @@ import {
 import { PrintLayout, PrintSize } from './store/print/print.reducers';
 import * as fromPrint from './store/print/print.reducers';
 import * as PrintActions from './store/print/print.actions';
+import { MangolConfigMap } from './interfaces/config-map.interface';
+import { MangolMap } from './classes/Map';
+import { MangolVectorLayer } from './classes/VectorLayer';
 
 @Injectable({
   providedIn: 'root'
@@ -77,7 +80,7 @@ export class MangolService {
    * Resets the Mangol State
    */
   resetMangolState(): void {
-    this.store.dispatch(new MangolActions.ClearState());
+    this.store.dispatch(MangolActions.clearState());
   }
 
   /*
@@ -85,15 +88,15 @@ export class MangolService {
    */
 
   setConfig(config: MangolConfig): void {
-    this.store.dispatch(new ConfigActions.SetConfig(config));
+    this.store.dispatch(ConfigActions.setConfig({ config }));
   }
 
   /*
    * MAP state functions
    */
 
-  setMap(map: Map): void {
-    this.store.dispatch(new MapActions.SetMap(map));
+  setMap(map: MangolConfigMap): void {
+    this.store.dispatch(MapActions.setMap({ map }));
   }
 
   /*
@@ -101,25 +104,25 @@ export class MangolService {
    */
 
   toggleSidebar(): void {
-    this.store.dispatch(new SidebarActions.Toggle());
+    this.store.dispatch(SidebarActions.toggle());
   }
   setHasSidebar(hasSidebar: boolean): void {
-    this.store.dispatch(new SidebarActions.SetHasSidebar(hasSidebar));
+    this.store.dispatch(SidebarActions.setHasSidebar({ hasSidebar }));
   }
   setSidebarMode(mode: string): void {
-    this.store.dispatch(new SidebarActions.SetMode(mode));
+    this.store.dispatch(SidebarActions.setMode({ mode }));
   }
   setSidebarCollapsible(collapsible: boolean): void {
-    this.store.dispatch(new SidebarActions.SetCollapsible(collapsible));
+    this.store.dispatch(SidebarActions.setCollapsible({ collapsible }));
   }
   setSidebarOpened(opened: boolean): void {
-    this.store.dispatch(new SidebarActions.SetOpened(opened));
+    this.store.dispatch(SidebarActions.setOpened({ opened }));
   }
   setSidebarTitle(title: string): void {
-    this.store.dispatch(new SidebarActions.SetTitle(title));
+    this.store.dispatch(SidebarActions.setTitle({ title }));
   }
-  setSidebarSelectedModule(module: string): void {
-    this.store.dispatch(new SidebarActions.SetSelectedModule(module));
+  setSidebarSelectedModule(selectedModule: string): void {
+    this.store.dispatch(SidebarActions.setSelectedModule({ selectedModule }));
   }
 
   /*
@@ -127,65 +130,57 @@ export class MangolService {
    */
 
   resetControllers(): void {
-    this.store.dispatch(new ControllersActions.Reset());
+    this.store.dispatch(ControllersActions.reset());
   }
-  setControllersShowZoom(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowZoom(show));
+  setControllersShowZoom(showZoom: boolean): void {
+    this.store.dispatch(ControllersActions.setShowZoom({ showZoom }));
   }
   setControllersZoomDictionary(
-    dictionary: MangolControllersZoomDictionary
+    zoomDictionary: MangolControllersZoomDictionary
   ): void {
-    this.store.dispatch(new ControllersActions.SetZoomDictionary(dictionary));
+    this.store.dispatch(ControllersActions.setZoomDictionary({ zoomDictionary }));
   }
-  setControllersShowTooltip(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowTooltip(show));
+  setControllersZoomShowTooltip(zoomShowTooltip: boolean): void {
+    this.store.dispatch(ControllersActions.setZoomShowTooltip({ zoomShowTooltip }));
   }
-  setControllersShowPosition(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowPosition(show));
+  setControllersShowPosition(showPosition: boolean): void {
+    this.store.dispatch(ControllersActions.setShowPosition({ showPosition }));
   }
-  setControllersPositionPrecision(precision: number): void {
-    this.store.dispatch(new ControllersActions.SetPositionPrecision(precision));
+  setControllersPositionPrecision(positionPrecision: number): void {
+    this.store.dispatch(ControllersActions.setPositionPrecision({ positionPrecision }));
   }
-  setControllersPositionCoordinates(coordinates: [number, number]): void {
-    this.store.dispatch(
-      new ControllersActions.SetPositionCoordinates(coordinates)
-    );
+  setControllersPositionCoordinates(positionCoordinates: [number, number]): void {
+    this.store.dispatch(ControllersActions.setPositionCoordinates({ positionCoordinates }));
   }
   setControllersPositionDictionary(
-    dictionary: MangolControllersPositionDictionary
+    positionDictionary: MangolControllersPositionDictionary
   ): void {
-    this.store.dispatch(
-      new ControllersActions.SetPositionDictionary(dictionary)
-    );
+    this.store.dispatch(ControllersActions.setPositionDictionary({ positionDictionary}));
   }
-  setControllersShowRotation(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowRotation(show));
+  setControllersShowRotation(showRotation: boolean): void {
+    this.store.dispatch(ControllersActions.setShowRotation({ showRotation }));
   }
   setControllersRotationDictionary(
-    dictionary: MangolControllersRotationDictionary
+    rotationDictionary: MangolControllersRotationDictionary
   ): void {
-    this.store.dispatch(
-      new ControllersActions.SetRotationDictionary(dictionary)
-    );
+    this.store.dispatch(ControllersActions.setRotationDictionary({ rotationDictionary }));
   }
-  setControllersShowRotationTooltip(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowRotationTooltip(show));
+  setControllersShowRotationTooltip(showRotationTooltip: boolean): void {
+    this.store.dispatch(ControllersActions.setShowRotationTooltip({ showRotationTooltip }));
   }
-  setControllersRotationValue(value: number): void {
-    this.store.dispatch(new ControllersActions.SetRotationValue(value));
+  setControllersRotationValue(rotationValue: number): void {
+    this.store.dispatch(ControllersActions.setRotationValue({ rotationValue }));
   }
-  setControllersShowFullscreen(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowFullscreen(show));
+  setControllersShowFullscreen(showFullscreen: boolean): void {
+    this.store.dispatch(ControllersActions.setShowFullscreen({ showFullscreen }));
   }
-  setControllersShowFullscreenTooltip(show: boolean): void {
-    this.store.dispatch(new ControllersActions.SetShowFullscreenTooltip(show));
+  setControllersShowFullscreenTooltip(showFullscreenTooltip: boolean): void {
+    this.store.dispatch(ControllersActions.setShowFullscreenTooltip({ showFullscreenTooltip }));
   }
   setControllersFullscreenDictionary(
-    dictionary: MangolControllersFullScreenDictionary
+    fullscreenDictionary: MangolControllersFullScreenDictionary
   ): void {
-    this.store.dispatch(
-      new ControllersActions.SetFullscreenDictionary(dictionary)
-    );
+    this.store.dispatch(ControllersActions.setFullscreenDictionary({ fullscreenDictionary }));
   }
 
   /*
@@ -193,16 +188,16 @@ export class MangolService {
    */
 
   resetCursorMode(): void {
-    this.store.dispatch(new CursorActions.ResetMode());
+    this.store.dispatch(CursorActions.resetMode());
   }
   setCursorMode(mode: CursorMode): void {
-    this.store.dispatch(new CursorActions.SetMode(mode));
+    this.store.dispatch(CursorActions.setMode({mode}));
   }
   setCursorVisible(visible: boolean): void {
-    this.store.dispatch(new CursorActions.SetVisible(visible));
+    this.store.dispatch(CursorActions.setVisible({visible}));
   }
   setCursorLayer(layer: VectorLayer): void {
-    this.store.dispatch(new CursorActions.SetLayer(layer));
+    this.store.dispatch(CursorActions.setLayer({layer}));
   }
 
   /*
@@ -210,34 +205,34 @@ export class MangolService {
    */
 
   featureinfoSetHasFeatureinfo(hasFeatureinfo: boolean): void {
-    this.store.dispatch(new FeatureinfoActions.HasFeatureinfo(hasFeatureinfo));
+    this.store.dispatch(FeatureinfoActions.hasFeatureInfo({hasFeatureinfo}));
   }
   featureinfoSetDisabled(disabled: boolean): void {
-    this.store.dispatch(new FeatureinfoActions.SetDisabled(disabled));
+    this.store.dispatch(FeatureinfoActions.setDisabled({disabled}));
   }
   featureinfoSetTitle(title: string): void {
-    this.store.dispatch(new FeatureinfoActions.SetTitle(title));
+    this.store.dispatch(FeatureinfoActions.setTitle({title}));
   }
   featureinfoSetMaxFeatures(maxFeatures: number): void {
-    this.store.dispatch(new FeatureinfoActions.SetMaxFeatures(maxFeatures));
+    this.store.dispatch(FeatureinfoActions.setMaxFeatures({maxFeatures}));
   }
   featureinfoSetLayers(layers: MangolLayer[]): void {
-    this.store.dispatch(new FeatureinfoActions.SetLayers(layers));
+    this.store.dispatch(FeatureinfoActions.setLayers({layers}));
   }
-  featureinfoSetSelectedLayer(layer: MangolLayer): void {
-    this.store.dispatch(new FeatureinfoActions.SetSelectedLayer(layer));
+  featureinfoSetSelectedLayer(selectedLayer: MangolLayer): void {
+    this.store.dispatch(FeatureinfoActions.setSelectedLayer({selectedLayer}));
   }
-  featureinfoSetResultsLayer(layer: VectorLayer): void {
-    this.store.dispatch(new FeatureinfoActions.SetResultsLayer(layer));
+  featureinfoSetResultsLayer(resultsLayer: VectorLayer): void {
+    this.store.dispatch(FeatureinfoActions.setResultsLayer({resultsLayer}));
   }
-  featureinfoSetResultsItems(features: Feature[]): void {
-    this.store.dispatch(new FeatureinfoActions.SetResultsItems(features));
+  featureinfoSetResultsItems(resultItems: Feature[]): void {
+    this.store.dispatch(FeatureinfoActions.setResultsItems({resultItems}));
   }
   featureinfoSetDictionary(dictionary: FeatureinfoDictionary): void {
-    this.store.dispatch(new FeatureinfoActions.SetDictionary(dictionary));
+    this.store.dispatch(FeatureinfoActions.setDictionary({dictionary}));
   }
-  featureinfoSetHoverColor(color: [number, number, number]): void {
-    this.store.dispatch(new FeatureinfoActions.SetHoverColor(color));
+  featureinfoSetHoverColor(hoverColor: [number, number, number]): void {
+    this.store.dispatch(FeatureinfoActions.setHoverColor({hoverColor}));
   }
 
   /**
@@ -245,19 +240,19 @@ export class MangolService {
    */
 
   layersSetLayers(layers: MangolLayer[]): void {
-    this.store.dispatch(new LayersActions.SetLayers(layers));
+    this.store.dispatch(LayersActions.setLayers({ layers }));
   }
 
   layersAddLayer(layer: MangolLayer): void {
-    this.store.dispatch(new LayersActions.AddLayer(layer));
+    this.store.dispatch(LayersActions.addLayer({ layer }));
   }
 
-  layersRemoveLayer(name: string): void {
-    this.store.dispatch(new LayersActions.RemoveLayer(name));
+  layersRemoveLayer(layerName: string): void {
+    this.store.dispatch(LayersActions.removeLayer({ layerName }));
   }
 
-  layersSetMeasureLayer(layer: VectorLayer): void {
-    this.store.dispatch(new LayersActions.SetMeasureLayer(layer));
+  layersSetMeasureLayer(layer: MangolVectorLayer): void {
+    this.store.dispatch(LayersActions.setMeasureLayer({ layer }));
   }
 
   /**
@@ -265,19 +260,19 @@ export class MangolService {
    */
 
   layertreeSetHasLayertree(hasLayertree: boolean): void {
-    this.store.dispatch(new LayertreeActions.HasLayertree(hasLayertree));
+    this.store.dispatch(LayertreeActions.hasLayertree({hasLayertree}));
   }
   layertreeSetDisabled(disabled: boolean): void {
-    this.store.dispatch(new LayertreeActions.SetDisabled(disabled));
+    this.store.dispatch(LayertreeActions.setDisabled({disabled}));
   }
   layertreeSetTitle(title: string): void {
-    this.store.dispatch(new LayertreeActions.SetTitle(title));
+    this.store.dispatch(LayertreeActions.setTitle({title}));
   }
   layertreeSetDictionary(dictionary: LayertreeDictionary): void {
-    this.store.dispatch(new LayertreeActions.SetDictionary(dictionary));
+    this.store.dispatch(LayertreeActions.setDictionary({dictionary}));
   }
   layertreeShowLayergroupBadges(showBadges: boolean): void {
-    this.store.dispatch(new LayertreeActions.ShowLayergroupBadges(showBadges));
+    this.store.dispatch(LayertreeActions.showLayergroupBadges({showBadges}));
   }
 
   /**
@@ -285,52 +280,52 @@ export class MangolService {
    */
 
   measureSetHasMeasure(hasMeasure: boolean): void {
-    this.store.dispatch(new MeasureActions.HasMeasure(hasMeasure));
+    this.store.dispatch(MeasureActions.hasMeasure({hasMeasure}));
   }
   measureSetDisabled(disabled: boolean): void {
-    this.store.dispatch(new MeasureActions.SetDisabled(disabled));
+    this.store.dispatch(MeasureActions.setDisabled({disabled}));
   }
   measureSetTitle(title: string): void {
-    this.store.dispatch(new MeasureActions.SetTitle(title));
+    this.store.dispatch(MeasureActions.setTitle({title}));
   }
   measureSetDictionary(dictionary: MeasureDictionary): void {
-    this.store.dispatch(new MeasureActions.SetDictionary(dictionary));
+    this.store.dispatch(MeasureActions.setDictionary({dictionary}));
   }
   measureSetMode(mode: MeasureMode): void {
-    this.store.dispatch(new MeasureActions.SetMode(mode));
+    this.store.dispatch(MeasureActions.setMode({mode}));
   }
 
   /**
    * PRINT state functions
    */
   printSetHasPrint(hasPrint: boolean): void {
-    this.store.dispatch(new PrintActions.HasPrint(hasPrint));
+    this.store.dispatch(PrintActions.hasPrint({hasPrint}));
   }
   printSetDisabled(disabled: boolean): void {
-    this.store.dispatch(new PrintActions.SetDisabled(disabled));
+    this.store.dispatch(PrintActions.setDisabled({disabled}));
   }
   printSetTitle(title: string): void {
-    this.store.dispatch(new PrintActions.SetTitle(title));
+    this.store.dispatch(PrintActions.setTitle({title}));
   }
   printSetResolutions(resolutions: number[]): void {
-    this.store.dispatch(new PrintActions.SetResolutions(resolutions));
+    this.store.dispatch(PrintActions.setResolutions({resolutions}));
   }
   printSetLayouts(layouts: PrintLayout[]): void {
-    this.store.dispatch(new PrintActions.SetLayouts(layouts));
+    this.store.dispatch(PrintActions.setLayouts({layouts}));
   }
   printSetSizes(sizes: PrintSize[]): void {
-    this.store.dispatch(new PrintActions.SetSizes(sizes));
+    this.store.dispatch(PrintActions.setSizes({sizes}));
   }
   printSetDictionary(dictionary: PrintDictionary): void {
-    this.store.dispatch(new PrintActions.SetDictionary(dictionary));
+    this.store.dispatch(PrintActions.setDictionary({dictionary}));
   }
-  printSetSelectedLayout(layout: PrintLayout): void {
-    this.store.dispatch(new PrintActions.SetSelectedLayout(layout));
+  printSetSelectedLayout(selectedLayout: PrintLayout): void {
+    this.store.dispatch(PrintActions.setSelectedLayout({selectedLayout}));
   }
-  printSetSelectedResolution(resolution: number): void {
-    this.store.dispatch(new PrintActions.SetSelectedResolution(resolution));
+  printSetSelectedResolution(selectedResolution: number): void {
+    this.store.dispatch(PrintActions.setSelectedResolution({selectedResolution}));
   }
-  printSetSelectedSize(size: PrintSize): void {
-    this.store.dispatch(new PrintActions.SetSelectedSize(size));
+  printSetSelectedSize(selectedSize: PrintSize): void {
+    this.store.dispatch(PrintActions.setSelectedSize({selectedSize}));
   }
 }

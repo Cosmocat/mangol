@@ -1,6 +1,8 @@
 import GeometryType from 'ol/geom/GeometryType';
 
 import * as MeasureActions from './measure.actions';
+import { createReducer, on } from '@ngrx/store';
+import { hasFeatureInfo } from '../featureinfo/featureinfo.actions';
 
 export interface MeasureMode {
   type: string;
@@ -72,28 +74,28 @@ const initialState: State = {
   }
 };
 
-export function measureReducer(
-  state = initialState,
-  action: MeasureActions.MeasureActions
-) {
-  switch (action.type) {
-    case MeasureActions.HAS_MEASURE:
-      return { ...state, hasMeasure: action.payload };
-    case MeasureActions.SET_DISABLED:
-      return { ...state, disabled: action.payload };
-    case MeasureActions.SET_TITLE:
-      return { ...state, title: action.payload };
-    case MeasureActions.SET_DICTIONARY:
-      const dict = { ...state.dictionary };
-      for (const key in action.payload) {
-        if (action.payload.hasOwnProperty(key)) {
-          dict[key] = action.payload[key];
+
+export const measureReducer = createReducer(
+  initialState,
+  on(MeasureActions.hasMeasure, (state, { hasMeasure }) => {
+    return { ...state, hasMeasure: hasMeasure };
+  }),
+  on(MeasureActions.setDisabled, (state, { disabled }) => {
+    return { ...state, disabled: disabled };
+  }),
+  on(MeasureActions.setTitle, (state, { title }) => {
+    return { ...state, title: title };
+  }),
+  on(MeasureActions.setDictionary, (state, { dictionary }) => {
+    const dict = { ...state.dictionary };
+      for (const key in dictionary) {
+        if (dictionary.hasOwnProperty(key)) {
+          dict[key] = dictionary[key];
         }
       }
       return { ...state, dictionary: dict };
-    case MeasureActions.SET_MODE:
-      return { ...state, mode: action.payload };
-    default:
-      return state;
-  }
-}
+  }),
+  on(MeasureActions.setMode, (state, { mode }) => {
+    return { ...state, mode: mode };
+  }),
+);

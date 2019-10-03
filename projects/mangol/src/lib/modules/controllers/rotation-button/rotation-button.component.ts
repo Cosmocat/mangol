@@ -8,6 +8,7 @@ import { shownStateTrigger } from '../controllers.animations';
 import * as ControllersActions from './../../../store/controllers/controllers.actions';
 import { MangolControllersRotationStateModel } from './../../../store/controllers/controllers.reducers';
 import * as fromMangol from './../../../store/mangol.reducers';
+import { MapService } from '../../map/map.service';
 
 @Component({
   selector: 'mangol-rotation-button',
@@ -22,23 +23,15 @@ export class RotationButtonComponent implements OnInit, OnDestroy {
 
   mapSubscription: Subscription;
 
-  constructor(private store: Store<fromMangol.MangolState>) {
+  constructor(private store: Store<fromMangol.MangolState>, private mapService: MapService) {
     this.rotation$ = this.store.select(fromMangol.getControllersRotation);
-
-    this.mapSubscription = this.store
-      .select(fromMangol.getMap)
-      .pipe(filter(m => m !== null))
-      .subscribe(m => {
-        const view = m.getView();
-        this.store.dispatch(
-          new ControllersActions.SetRotationValue(view.getRotation())
-        );
-        if (this.rotationFunction !== null) {
-          view.un('change:rotation', this.rotationFunction);
-        }
-        this.rotationFunction = evt => this._createRotationFunction(evt);
-        view.on('change:rotation', this.rotationFunction);
-      });
+    const view = this.mapService.map.getView();
+    this.store.dispatch(ControllersActions.setRotationValue({rotationValue: view.getRotation()}) );
+    if (this.rotationFunction !== null) {
+      view.un('change:rotation', this.rotationFunction);
+    }
+    this.rotationFunction = evt => this._createRotationFunction(evt);
+    view.on('change:rotation', this.rotationFunction);
   }
 
   ngOnInit() {}
@@ -47,33 +40,17 @@ export class RotationButtonComponent implements OnInit, OnDestroy {
     if (this.mapSubscription) {
       this.mapSubscription.unsubscribe();
     }
-    this.store
-      .select(fromMangol.getMap)
-      .pipe(
-        filter(m => m !== null),
-        take(1)
-      )
-      .subscribe(m => {
-        m.getView().un('change:rotation', this.rotationFunction);
-      });
+    this.mapService.map.getView().un('change:rotation', this.rotationFunction);
   }
 
   rotateNorth() {
-    this.store
-      .select(fromMangol.getMap)
-      .pipe(
-        filter(m => m !== null),
-        take(1)
-      )
-      .subscribe(m => {
-        const view = m.getView();
-        if (view.getRotation() !== 0) {
-          view.animate({ rotation: 0, duration: this.animationDuration });
-          setTimeout(() => {
-            view.setRotation(0);
-          }, this.animationDuration + 1);
-        }
-      });
+      const view = this.mapService.map.getView();
+      if (view.getRotation() !== 0) {
+        view.animate({ rotation: 0, duration: this.animationDuration });
+        setTimeout(() => {
+          view.setRotation(0);
+        }, this.animationDuration + 1);
+      }
   }
 
   getRotationStyle(rotation: number) {
@@ -82,8 +59,6 @@ export class RotationButtonComponent implements OnInit, OnDestroy {
 
   private _createRotationFunction(evt) {
     const targetView = <View>evt.target;
-    this.store.dispatch(
-      new ControllersActions.SetRotationValue(targetView.getRotation())
-    );
+    this.store.dispatch(ControllersActions.setRotationValue({rotationValue: targetView.getRotation()}));
   }
 }

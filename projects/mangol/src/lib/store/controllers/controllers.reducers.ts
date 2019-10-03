@@ -6,6 +6,7 @@ import {
   MangolControllersFullScreenOptions
 } from './../../interfaces/config-map-controllers.interface';
 import * as ControllersActions from './controllers.actions';
+import { createReducer, on } from '@ngrx/store';
 
 export interface MangolControllersPositionStateModel
   extends MangolControllersPositionOptions {
@@ -68,12 +69,10 @@ const initialState: State = {
   }
 };
 
-export function controllersReducer(
-  state = initialState,
-  action: ControllersActions.ControllersActions
-) {
-  switch (action.type) {
-    case ControllersActions.RESET:
+
+export const controllersReducer = createReducer(
+  initialState,
+  on(ControllersActions.reset, (state) => {
       return {
         ...state,
         zoom: initialState.zoom,
@@ -82,70 +81,50 @@ export function controllersReducer(
         rotation: initialState.rotation,
         fullScreen: initialState.fullScreen
       };
-    case ControllersActions.SET_SHOW_ZOOM:
-      return { ...state, zoom: { ...state.zoom, show: action.payload } };
-    case ControllersActions.SET_ZOOM_DICTIONARY:
-      return { ...state, zoom: { ...state.zoom, dictionary: action.payload } };
-    case ControllersActions.SET_SHOW_TOOLTIP:
-      return { ...state, zoom: { ...state.zoom, showTooltip: action.payload } };
-    case ControllersActions.SET_SCALEBAR:
-      return { ...state, scalebar: action.payload };
-    case ControllersActions.SET_SHOW_POSITION:
-      return {
-        ...state,
-        position: { ...state.position, show: action.payload }
-      };
-    case ControllersActions.SET_POSITION_PRECISION:
-      return {
-        ...state,
-        position: { ...state.position, precision: action.payload }
-      };
-    case ControllersActions.SET_POSITION_COORDINATES:
-      return {
-        ...state,
-        position: { ...state.position, coordinates: action.payload }
-      };
-    case ControllersActions.SET_POSITION_DICTIONARY:
-      return {
-        ...state,
-        position: { ...state.position, dictionary: action.payload }
-      };
-    case ControllersActions.SET_SHOW_ROTATION:
-      return {
-        ...state,
-        rotation: { ...state.rotation, show: action.payload }
-      };
-    case ControllersActions.SET_ROTATION_DICTIONARY:
-      return {
-        ...state,
-        rotation: { ...state.rotation, dictionary: action.payload }
-      };
-    case ControllersActions.SET_SHOW_ROTATION_TOOLTIP:
-      return {
-        ...state,
-        rotation: { ...state.rotation, showTooltip: action.payload }
-      };
-    case ControllersActions.SET_ROTATION_VALUE:
-      return {
-        ...state,
-        rotation: { ...state.rotation, rotation: action.payload }
-      };
-    case ControllersActions.SET_SHOW_FULLSCREEN:
-      return {
-        ...state,
-        fullScreen: { ...state.fullScreen, show: action.payload }
-      };
-    case ControllersActions.SET_SHOW_FULLSCREEN_TOOLTIP:
-      return {
-        ...state,
-        fullScreen: { ...state.fullScreen, showTooltip: action.payload }
-      };
-    case ControllersActions.SET_FULLSCREEN_DICTIONARY:
-      return {
-        ...state,
-        fullScreen: { ...state.fullScreen, dictionary: action.payload }
-      };
-    default:
-      return state;
-  }
-}
+  }),
+  on(ControllersActions.setShowZoom, (state, { showZoom }) => {
+    return { ...state, zoom: { ...state.zoom, show: showZoom } };
+  }),
+  on(ControllersActions.setZoomDictionary, (state, { zoomDictionary }) => {
+    return { ...state, zoom: { ...state.zoom, dictionary: zoomDictionary } };
+  }),
+  on(ControllersActions.setZoomShowTooltip, (state, { zoomShowTooltip }) => {
+    return { ...state, zoom: { ...state.zoom, showTooltip: zoomShowTooltip } };
+  }),
+  on(ControllersActions.setScalebar, (state, { scalebar }) => {
+    return { ...state, scalebar: scalebar };
+  }),
+  on(ControllersActions.setShowPosition, (state, { showPosition }) => {
+    return { ...state, position: { ...state.position, show: showPosition }};
+  }),
+  on(ControllersActions.setPositionPrecision, (state, { positionPrecision }) => {
+    return {...state, position: { ...state.position, precision: positionPrecision }};
+  }),
+  on(ControllersActions.setPositionCoordinates, (state, { positionCoordinates }) => {
+    return {...state, position: { ...state.position, coordinates: positionCoordinates }};
+  }),
+  on(ControllersActions.setPositionDictionary, (state, { positionDictionary }) => {
+    return {...state, position: { ...state.position, dictionary: positionDictionary }};
+  }),
+  on(ControllersActions.setShowRotation, (state, { showRotation }) => {
+    return { ...state, rotation: { ...state.rotation, show: showRotation }};
+  }),
+  on(ControllersActions.setRotationValue, (state, { rotationValue }) => {
+    return {...state, rotation: { ...state.rotation, rotation: rotationValue }};
+  }),
+  on(ControllersActions.setShowRotationTooltip, (state, { showRotationTooltip }) => {
+    return {...state, rotation: { ...state.rotation, showTooltip: showRotationTooltip }};
+  }),
+  on(ControllersActions.setRotationDictionary, (state, { rotationDictionary }) => {
+    return {...state, rotation: { ...state.rotation, dictionary: rotationDictionary }};
+  }),
+  on(ControllersActions.setShowFullscreen, (state, { showFullscreen }) => {
+    return {...state, fullScreen: { ...state.fullScreen, show: showFullscreen }};
+  }),
+  on(ControllersActions.setShowFullscreenTooltip, (state, { showFullscreenTooltip }) => {
+    return {...state, fullScreen: { ...state.fullScreen, showTooltip: showFullscreenTooltip }};
+  }),
+  on(ControllersActions.setFullscreenDictionary, (state, { fullscreenDictionary }) => {
+    return {...state, fullScreen: { ...state.fullScreen, dictionary: fullscreenDictionary }};
+  }),
+);

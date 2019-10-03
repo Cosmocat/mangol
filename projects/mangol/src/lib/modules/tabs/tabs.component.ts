@@ -83,18 +83,16 @@ export class TabsComponent implements OnInit, OnDestroy {
           !!config.sidebar &&
           !!config.sidebar.toolbar &&
           !!config.sidebar.toolbar.layertree;
-        this.store.dispatch(new LayertreeActions.HasLayertree(hasLayertree));
+        this.store.dispatch(LayertreeActions.hasLayertree({hasLayertree}));
         if (hasLayertree) {
           this.items.push('layertree');
           const layertree: MangolConfigLayertreeItem =
             config.sidebar.toolbar.layertree;
           if (layertree.hasOwnProperty('disabled')) {
-            this.store.dispatch(
-              new LayertreeActions.SetDisabled(layertree.disabled)
-            );
+            this.store.dispatch(LayertreeActions.setDisabled({disabled: layertree.disabled}));
           }
           if (layertree.hasOwnProperty('title')) {
-            this.store.dispatch(new LayertreeActions.SetTitle(layertree.title));
+            this.store.dispatch(LayertreeActions.setTitle({title: layertree.title}));
           }
         }
         /** Featureinfo */
@@ -104,22 +102,16 @@ export class TabsComponent implements OnInit, OnDestroy {
           !!config.sidebar &&
           !!config.sidebar.toolbar &&
           !!config.sidebar.toolbar.featureinfo;
-        this.store.dispatch(
-          new FeatureinfoActions.HasFeatureinfo(hasFeatureinfo)
-        );
+        this.store.dispatch(FeatureinfoActions.hasFeatureInfo({hasFeatureinfo}));
         if (hasFeatureinfo) {
           this.items.push('featureinfo');
           const featureinfo: MangolConfigFeatureInfoItem =
             config.sidebar.toolbar.featureinfo;
           if (featureinfo.hasOwnProperty('disabled')) {
-            this.store.dispatch(
-              new FeatureinfoActions.SetDisabled(featureinfo.disabled)
-            );
+            this.store.dispatch(FeatureinfoActions.setDisabled({disabled: featureinfo.disabled}));
           }
           if (featureinfo.hasOwnProperty('title')) {
-            this.store.dispatch(
-              new FeatureinfoActions.SetTitle(featureinfo.title)
-            );
+            this.store.dispatch(FeatureinfoActions.setTitle({title: featureinfo.title}));
           }
         }
         /** Measure */
@@ -129,18 +121,16 @@ export class TabsComponent implements OnInit, OnDestroy {
           !!config.sidebar &&
           !!config.sidebar.toolbar &&
           !!config.sidebar.toolbar.measure;
-        this.store.dispatch(new MeasureActions.HasMeasure(hasMeasure));
+        this.store.dispatch(MeasureActions.hasMeasure({hasMeasure}));
         if (hasMeasure) {
           this.items.push('measure');
           const measure: MangolConfigMeasureItem =
             config.sidebar.toolbar.measure;
           if (measure.hasOwnProperty('disabled')) {
-            this.store.dispatch(
-              new MeasureActions.SetDisabled(measure.disabled)
-            );
+            this.store.dispatch(MeasureActions.setDisabled({disabled: measure.disabled}));
           }
           if (measure.hasOwnProperty('title')) {
-            this.store.dispatch(new MeasureActions.SetTitle(measure.title));
+            this.store.dispatch(MeasureActions.setTitle({title: measure.title}));
           }
         }
         /** Print */
@@ -150,22 +140,20 @@ export class TabsComponent implements OnInit, OnDestroy {
           !!config.sidebar &&
           !!config.sidebar.toolbar &&
           !!config.sidebar.toolbar.print;
-        this.store.dispatch(new PrintActions.HasPrint(hasPrint));
+        this.store.dispatch(PrintActions.hasPrint({hasPrint}));
         if (hasPrint) {
           this.items.push('print');
           const print: MangolConfigPrintItem = config.sidebar.toolbar.print;
           if (print.hasOwnProperty('disabled')) {
-            this.store.dispatch(new PrintActions.SetDisabled(print.disabled));
+            this.store.dispatch(PrintActions.setDisabled({disabled: print.disabled}));
           }
           if (print.hasOwnProperty('title')) {
-            this.store.dispatch(new PrintActions.SetTitle(print.title));
+            this.store.dispatch(PrintActions.setTitle({title: print.title}));
           }
         }
 
         if (this.items.length > 0) {
-          this.store.dispatch(
-            new SidebarActions.SetSelectedModule(this.items[0])
-          );
+          this.store.dispatch(SidebarActions.setSelectedModule({ selectedModule: this.items[0] }));
         }
       });
   }
@@ -177,10 +165,10 @@ export class TabsComponent implements OnInit, OnDestroy {
   }
 
   toggleSidebar() {
-    this.store.dispatch(new SidebarActions.Toggle());
+    this.store.dispatch(SidebarActions.toggle());
   }
 
   selectTab(tabName: string) {
-    this.store.dispatch(new SidebarActions.SetSelectedModule(tabName));
+    this.store.dispatch(SidebarActions.setSelectedModule({ selectedModule: tabName }));
   }
 }

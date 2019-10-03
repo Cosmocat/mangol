@@ -17,6 +17,8 @@ import {
 import { MangolConfigMeasureItem } from './../../interfaces/config-toolbar.interface';
 import * as CursorActions from './../../store/cursor/cursor.actions';
 import { MeasureService } from './measure.service';
+import { MapService } from '../map/map.service';
+import { MangolVectorLayer } from '../../classes/VectorLayer';
 
 @Component({
   selector: 'mangol-measure',
@@ -26,7 +28,7 @@ import { MeasureService } from './measure.service';
 export class MeasureComponent implements OnInit, OnDestroy {
   dictionary$: Observable<MeasureDictionary>;
   measureConfig$: Observable<MangolConfigMeasureItem>;
-  map$: Observable<Map>;
+  map: Map;
   measureLayer$: Observable<VectorLayer>;
   measureMode$: Observable<MeasureMode>;
 
@@ -34,13 +36,12 @@ export class MeasureComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromMangol.MangolState>,
-    private measureService: MeasureService
+    private measureService: MeasureService,
+    private mapService: MapService
   ) {
     this.dictionary$ = this.store.select(fromMangol.getMeasureDictionary);
     this.measureConfig$ = this.store.select(fromMangol.getMeasureConfig);
-    this.map$ = this.store
-      .select(fromMangol.getMap)
-      .pipe(filter(m => m !== null));
+    this.map = this.mapService.map;
     this.measureLayer$ = this.store
       .select(fromMangol.getMeasureLayer)
       .pipe(filter(measureLayer => measureLayer !== null));
@@ -48,22 +49,18 @@ export class MeasureComponent implements OnInit, OnDestroy {
 
     this.measureConfigSubscription = this.measureConfig$.subscribe(config => {
       if (config.hasOwnProperty('dictionary')) {
-        this.store.dispatch(
-          new MeasureActions.SetDictionary(config.dictionary)
-        );
+        this.store.dispatch(MeasureActions.setDictionary({dictionary: config.dictionary}));
       }
     });
   }
 
   ngOnInit() {
-    this.map$.pipe(take(1)).subscribe(m => {
-      const layer = new VectorLayer({
+      const layer = new MangolVectorLayer({
         source: new VectorSource(),
         style: (feature: Feature) => this.measureService.getStyle(feature)
       });
-      m.addLayer(layer);
-      this.store.dispatch(new LayerActions.SetMeasureLayer(layer));
-    });
+      this.map.addLayer(layer);
+      this.store.dispatch(LayerActions.setMeasureLayer({ layer }));
   }
 
   ngOnDestroy() {
@@ -74,12 +71,13 @@ export class MeasureComponent implements OnInit, OnDestroy {
   }
 
   private _cleanUp() {
-    combineLatest(this.map$, this.measureLayer$)
+    this.store
+      .select(fromMangol.getMeasureLayer)
       .pipe(take(1))
-      .subscribe(([m, measureLayer]) => {
-        this.store.dispatch(new LayerActions.SetMeasureLayer(null));
-        m.removeLayer(measureLayer);
-        this.store.dispatch(new CursorActions.ResetMode());
+      .subscribe(measureLayer => {
+        this.store.dispatch(LayerActions.setMeasureLayer(null));
+        this.map.removeLayer(measureLayer);
+        this.store.dispatch(CursorActions.resetMode());
       });
   }
 }

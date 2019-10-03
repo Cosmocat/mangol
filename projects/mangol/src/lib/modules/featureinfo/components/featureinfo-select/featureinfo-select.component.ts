@@ -26,15 +26,15 @@ export class FeatureinfoSelectComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.dispatch(new FeatureinfoActions.SetSelectedLayer(null));
+    this.store.dispatch(FeatureinfoActions.setSelectedLayer(null));
   }
 
   onSelectionChanged(evt: MatSelectChange) {
     if (typeof evt.value === 'undefined') {
-      this.store.dispatch(new FeatureinfoActions.SetSelectedLayer(null));
+      this.store.dispatch(FeatureinfoActions.setSelectedLayer(null));
     } else {
-      const layer: MangolLayer = evt.value;
-      this.store.dispatch(new FeatureinfoActions.SetSelectedLayer(layer));
+      const selectedLayer: MangolLayer = evt.value;
+      this.store.dispatch(FeatureinfoActions.setSelectedLayer({selectedLayer}));
     }
   }
 }

@@ -44,7 +44,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.configSubscription = this.config$.subscribe(config => {
-      this.store.dispatch(new ControllersActions.Reset());
+      this.store.dispatch(ControllersActions.reset());
       if (
         typeof config !== 'undefined' &&
         config !== null &&
@@ -57,28 +57,20 @@ export class ControllersComponent implements OnInit, OnDestroy {
         if (!!config.map.controllers.zoom) {
           const zoomOptions = config.map.controllers.zoom;
           if (!!zoomOptions.show) {
-            this.store.dispatch(
-              new ControllersActions.SetShowZoom(zoomOptions.show)
-            );
+            this.store.dispatch(ControllersActions.setShowZoom({ showZoom: zoomOptions.show }));
           }
           if (!!zoomOptions.dictionary) {
-            this.store.dispatch(
-              new ControllersActions.SetZoomDictionary(zoomOptions.dictionary)
-            );
+            this.store.dispatch(ControllersActions.setZoomDictionary({ zoomDictionary: zoomOptions.dictionary }));
           }
           if (!!zoomOptions.showTooltip) {
-            this.store.dispatch(
-              new ControllersActions.SetShowTooltip(zoomOptions.showTooltip)
-            );
+            this.store.dispatch(ControllersActions.setZoomShowTooltip({ zoomShowTooltip: zoomOptions.showTooltip }));
           }
         }
         /**
          * Scalebar config (not yet implemented)
          */
         if (!!config.map.controllers.scalebar) {
-          this.store.dispatch(
-            new ControllersActions.SetScalebar(config.map.controllers.scalebar)
-          );
+          this.store.dispatch(ControllersActions.setScalebar({ scalebar: config.map.controllers.scalebar }));
         }
         /**
          * Mouse position config
@@ -86,22 +78,14 @@ export class ControllersComponent implements OnInit, OnDestroy {
         if (!!config.map.controllers.position) {
           const positionOptions = config.map.controllers.position;
           if (!!positionOptions.show) {
-            this.store.dispatch(
-              new ControllersActions.SetShowPosition(positionOptions.show)
-            );
+            this.store.dispatch(ControllersActions.setShowPosition({ showPosition: positionOptions.show }));
           }
           if (!!positionOptions.precision) {
-            this.store.dispatch(
-              new ControllersActions.SetPositionPrecision(
-                positionOptions.precision
-              )
+            this.store.dispatch(ControllersActions.setPositionPrecision({ positionPrecision: positionOptions.precision })
             );
           }
           if (!!positionOptions.dictionary) {
-            this.store.dispatch(
-              new ControllersActions.SetPositionDictionary(
-                positionOptions.dictionary
-              )
+            this.store.dispatch(ControllersActions.setPositionDictionary({positionDictionary: positionOptions.dictionary})
             );
           }
         }
@@ -111,23 +95,13 @@ export class ControllersComponent implements OnInit, OnDestroy {
         if (!!config.map.controllers.rotation) {
           const rotationOptions = config.map.controllers.rotation;
           if (!!rotationOptions.show) {
-            this.store.dispatch(
-              new ControllersActions.SetShowRotation(rotationOptions.show)
-            );
+            this.store.dispatch(ControllersActions.setShowRotation({ showRotation: rotationOptions.show }));
           }
           if (!!rotationOptions.dictionary) {
-            this.store.dispatch(
-              new ControllersActions.SetRotationDictionary(
-                rotationOptions.dictionary
-              )
-            );
+            this.store.dispatch(ControllersActions.setRotationDictionary({rotationDictionary: rotationOptions.dictionary}));
           }
           if (!!rotationOptions.showTooltip) {
-            this.store.dispatch(
-              new ControllersActions.SetShowRotationTooltip(
-                rotationOptions.showTooltip
-              )
-            );
+            this.store.dispatch(ControllersActions.setShowRotationTooltip({showRotationTooltip: rotationOptions.showTooltip}));
           }
         }
         /**
@@ -136,23 +110,13 @@ export class ControllersComponent implements OnInit, OnDestroy {
         if (!!config.map.controllers.fullScreen) {
           const fullscreenOptions = config.map.controllers.fullScreen;
           if (fullscreenOptions.hasOwnProperty('show')) {
-            this.store.dispatch(
-              new ControllersActions.SetShowFullscreen(fullscreenOptions.show)
-            );
+            this.store.dispatch(ControllersActions.setShowFullscreen({showFullscreen: fullscreenOptions.show}));
           }
           if (fullscreenOptions.hasOwnProperty('dictionary')) {
-            this.store.dispatch(
-              new ControllersActions.SetFullscreenDictionary(
-                fullscreenOptions.dictionary
-              )
-            );
+            this.store.dispatch(ControllersActions.setFullscreenDictionary({fullscreenDictionary: fullscreenOptions.dictionary}));
           }
           if (fullscreenOptions.hasOwnProperty('showTooltip')) {
-            this.store.dispatch(
-              new ControllersActions.SetShowFullscreenTooltip(
-                fullscreenOptions.showTooltip
-              )
-            );
+            this.store.dispatch(ControllersActions.setShowFullscreenTooltip({showFullscreenTooltip: fullscreenOptions.showTooltip}));
           }
         }
       }

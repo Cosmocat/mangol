@@ -30,10 +30,10 @@ export class MeasureSelectComponent implements OnInit {
 
   onSelectionChanged(evt: MatSelectChange) {
     if (typeof evt.value === 'undefined') {
-      this.store.dispatch(new MeasureActions.SetMode(null));
+      this.store.dispatch(MeasureActions.setMode(null));
     } else {
       const mode: MeasureMode = evt.value;
-      this.store.dispatch(new MeasureActions.SetMode(mode));
+      this.store.dispatch(MeasureActions.setMode({mode}));
     }
   }
 }

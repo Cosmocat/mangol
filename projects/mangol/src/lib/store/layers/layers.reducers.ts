@@ -1,10 +1,12 @@
 import { MangolLayer } from './../../classes/Layer';
 import * as LayersActions from './layers.actions';
 import VectorLayer from 'ol/layer/Vector';
+import { createReducer, on } from '@ngrx/store';
+import { MangolVectorLayer } from '../../classes/VectorLayer';
 
 export interface State {
   layers: MangolLayer[];
-  measureLayer: VectorLayer;
+  measureLayer: MangolVectorLayer;
 }
 
 const initialState: State = {
@@ -12,20 +14,30 @@ const initialState: State = {
   measureLayer: null
 };
 
-export function layersReducer(
-  state = initialState,
-  action: LayersActions.LayersActions
-) {
-  switch (action.type) {
-    case LayersActions.SET_LAYERS:
-      return { ...state, layers: action.payload };
-    case LayersActions.ADD_LAYER:
-        return { ...state, layers: [...state.layers, action.payload]};
-    case LayersActions.REMOVE_LAYER:
-        return { ...state, layers: [...state.layers.filter(l => l.name !== action.payload)]};
-    case LayersActions.SET_MEASURE_LAYER:
-      return { ...state, measureLayer: action.payload };
-    default:
-      return state;
-  }
-}
+export const layersReducer = createReducer(
+  initialState,
+  on(LayersActions.setLayers, (state, { layers }) => {
+      return {
+          ...state,
+          layers: layers
+      };
+  }),
+  on(LayersActions.addLayer, (state, { layer }) => {
+    return {
+        ...state,
+        layers: [...state.layers, layer]
+    };
+  }),
+  on(LayersActions.removeLayer, (state, { layerName }) => {
+    return {
+        ...state,
+        layers: [...state.layers.filter(l => l.name !== layerName)]
+    };
+  }),
+  on(LayersActions.setMeasureLayer, (state, { layer }) => {
+    return {
+        ...state,
+        measureLayer: layer
+    };
+  }),
+);

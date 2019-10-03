@@ -3,6 +3,7 @@ import VectorLayer from 'ol/layer/Vector';
 
 import { MangolLayer } from './../../classes/Layer';
 import * as FeatureinfoActions from './featureinfo.actions';
+import { createReducer, on } from '@ngrx/store';
 
 export interface FeatureinfoDictionary {
   clearSelection?: string;
@@ -56,32 +57,43 @@ const initialState: State = {
   }
 };
 
-export function featureinfoReducer(
-  state = initialState,
-  action: FeatureinfoActions.FeatureinfoActions
-) {
-  switch (action.type) {
-    case FeatureinfoActions.HAS_FEATUREINFO:
-      return { ...state, hasFeatureinfo: action.payload };
-    case FeatureinfoActions.SET_DISABLED:
-      return { ...state, disabled: action.payload };
-    case FeatureinfoActions.SET_TITLE:
-      return { ...state, title: action.payload };
-    case FeatureinfoActions.SET_MAX_FEATURES:
-      return { ...state, maxFeatures: action.payload };
-    case FeatureinfoActions.SET_LAYERS:
-      return { ...state, layers: action.payload };
-    case FeatureinfoActions.SET_SELECTED_LAYER:
-      return { ...state, selectedLayer: action.payload };
-    case FeatureinfoActions.SET_RESULTS_LAYER:
-      return { ...state, resultsLayer: action.payload };
-    case FeatureinfoActions.SET_RESULTS_ITEMS:
-      return { ...state, resultsItems: action.payload };
-    case FeatureinfoActions.SET_DICTIONARY:
-      return { ...state, dictionary: action.payload };
-    case FeatureinfoActions.SET_HOVER_COLOR:
-      return { ...state, hoverColor: action.payload };
-    default:
-      return state;
-  }
-}
+export const featureinfoReducer = createReducer(
+  initialState,
+  on(FeatureinfoActions.hasFeatureInfo, (state, { hasFeatureinfo }) => {
+      return { ...state, hasFeatureinfo: hasFeatureinfo };
+  }),
+  on(FeatureinfoActions.setDisabled, (state, { disabled }) => {
+    return { ...state, disabled: disabled };
+  }),
+  on(FeatureinfoActions.setTitle, (state, { title }) => {
+    return { ...state, title: title };
+  }),
+  on(FeatureinfoActions.setMaxFeatures, (state, { maxFeatures }) => {
+    return { ...state, maxFeatures: maxFeatures };
+  }),
+  on(FeatureinfoActions.setLayers, (state, { layers }) => {
+    return { ...state, layers: layers };
+  }),
+  on(FeatureinfoActions.setSelectedLayer, (state, { selectedLayer }) => {
+    return { ...state, selectedLayer: selectedLayer };
+  }),
+  on(FeatureinfoActions.setResultsLayer, (state, { resultsLayer }) => {
+    return { ...state, resultsLayer: resultsLayer };
+  }),
+  on(FeatureinfoActions.setResultsItems, (state, { resultItems }) => {
+    return { ...state, resultsItems: resultItems };
+  }),
+  on(FeatureinfoActions.setDictionary, (state, { dictionary }) => {
+    const dict = { ...state.dictionary };
+      for (const key in dictionary) {
+        if (dictionary.hasOwnProperty(key)) {
+          dict[key] = dictionary[key];
+        }
+      }
+      return { ...state, dictionary: dict };
+  }),
+  on(FeatureinfoActions.setHoverColor, (state, { hoverColor }) => {
+    return { ...state, hoverColor: hoverColor };
+  })
+);
+

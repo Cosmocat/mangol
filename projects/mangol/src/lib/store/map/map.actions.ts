@@ -1,11 +1,9 @@
-import { Action } from '@ngrx/store';
-import Map from 'ol/Map';
+import { createAction, props } from '@ngrx/store';
+import { MangolMap } from '../../classes/Map';
+import { MangolConfigMap } from '../../interfaces/config-map.interface';
 
-export const SET_MAP = '[Map] Set Map';
+export const setMap = createAction(
+  '[Map] Set Map',
+  props<{ map: MangolConfigMap }>()
+);
 
-export class SetMap implements Action {
-  readonly type = SET_MAP;
-  constructor(public payload: Map) {}
-}
-
-export type MapActions = SetMap;

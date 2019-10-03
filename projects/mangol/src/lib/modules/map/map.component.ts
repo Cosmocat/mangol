@@ -18,6 +18,7 @@ import { MangolLayer } from '../../classes/Layer';
 import { MangolLayerGroup } from '../../classes/LayerGroup';
 import { MangolConfig } from '../../interfaces/config.interface';
 import { MangolConfigMap } from './../../interfaces/config-map.interface';
+import { MangolConfigView } from '../../interfaces/config-view.interface';
 import * as ControllersActions from './../../store/controllers/controllers.actions';
 import { MangolControllersPositionStateModel } from './../../store/controllers/controllers.reducers';
 import * as CursorActions from './../../store/cursor/cursor.actions';
@@ -51,7 +52,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   defaultMap: {
     target: string;
     layers: MangolLayer[];
-    view: View;
+    view: MangolConfigView;
   } = null;
 
   /**
@@ -84,7 +85,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.configSubscription = this.store
       .select(fromMangol.getConfig)
       .subscribe((config: MangolConfig) => {
-        let view: View = null;
+        let view: MangolConfigView = null;
         let layers: MangolLayer[] = null;
         if (typeof config !== 'undefined' && config !== null && !!config.map) {
           const configMap: MangolConfigMap = config.map;
@@ -99,41 +100,46 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         // Create the map
         this.store.dispatch(
-          new MapActions.SetMap(
-            new Map({
+          MapActions.setMap({map:
+            {
               target: this.target,
               view: view !== null ? view : this.defaultMap.view,
               layers: []
-            })
-          )
+            }
+          })
         );
         // Register the layers
-        this.store.dispatch(new LayersActions.SetLayers(layers));
+        this.store.dispatch(LayersActions.setLayers({ layers }));
+        this.mapService.setMap( {
+          target: this.target,
+          view: view !== null ? view : this.defaultMap.view,
+          layers: []
+        });
       });
 
     // React to layer changes in the store
     this.layersSubscription = this.store
       .select(fromMangol.getLayers)
       .subscribe((layers: MangolLayer[]) => {
-        this.store
-          .select(fromMangol.getMap)
-          .pipe(take(1))
-          .subscribe(map => {
-            // Add or remove OL layers depending on updates from store
-            const existingLayers = map.getLayers().getArray();
-            const tileLayers = layers.map(l => l.layer) as BaseLayer[];
-            tileLayers.length > existingLayers.length - 1 ?
-            tileLayers.forEach(l => {
-                if (existingLayers.indexOf(l) === -1) {
-                  map.addLayer(l);
-                }
-              }) :
-              existingLayers.forEach(l => {
-                if (l.getType() === 'TILE' && tileLayers.indexOf(l) === -1) {
-                  map.removeLayer(l);
-                }
-              });
-          });
+        // this.store
+        //   .select(fromMangol.getMap)
+        //   .pipe(take(1))
+        //   .subscribe(map => {
+        // Add or remove OL layers depending on updates from store
+        const existingLayers = this.mapService.map.getLayers().getArray();
+        const tileLayers = layers.map(l => l.layer) as BaseLayer[];
+        tileLayers.length > existingLayers.length - 1 ?
+        tileLayers.forEach(l => {
+          if (existingLayers.indexOf(l) === -1) {
+            this.mapService.map.addLayer(l);
+          }
+        }) :
+        existingLayers.forEach(l => {
+          if (l.getType() === 'TILE' && tileLayers.indexOf(l) === -1) {
+            this.mapService.map.removeLayer(l);
+          }
+        });
+          // });
       });
 
     this.cursorModeSubscription = this.store
@@ -147,16 +153,16 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         };
       });
 
-    this.mapSubscription = this.store
-      .select(fromMangol.getMap)
-      .pipe(filter(m => m !== null))
-      .subscribe(m => {
+    // this.mapSubscription = this.store
+    //   .select(fromMangol.getMap)
+    //   .pipe(filter(m => m !== null))
+    //   .subscribe(m => {
         if (this.pointerMoveFunction !== null) {
-          m.un('pointermove', this.pointerMoveFunction);
+          this.mapService.map.un('pointermove', this.pointerMoveFunction);
         }
         this.pointerMoveFunction = evt => this._createPointerMoveFunction(evt);
-        m.on('pointermove', this.pointerMoveFunction);
-      });
+        this.mapService.map.on('pointermove', this.pointerMoveFunction);
+      // });
 
     this.positionSubscription = this.store
       .select(fromMangol.getControllersPosition)
@@ -177,15 +183,15 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.mapSubscription.unsubscribe();
     }
     if (this.pointerMoveFunction !== null) {
-      this.store
-        .select(fromMangol.getMap)
-        .pipe(
-          filter(m => m !== null),
-          take(1)
-        )
-        .subscribe(m => {
-          m.un('pointermove', this.pointerMoveFunction);
-        });
+      // this.store
+      //   .select(fromMangol.getMap)
+      //   .pipe(
+      //     filter(m => m !== null),
+      //     take(1)
+      //   )
+      //   .subscribe(m => {
+          this.mapService.map.un('pointermove', this.pointerMoveFunction);
+      //  });
     }
   }
 
@@ -198,9 +204,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     } else {
       const coords = <[number, number]>this._formatCoordinates(evt.coordinate);
-      this.store.dispatch(
-        new ControllersActions.SetPositionCoordinates(coords)
-      );
+      this.store.dispatch(ControllersActions.setPositionCoordinates({positionCoordinates: coords}));
     }
   }
 
@@ -260,6 +264,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onEnterOrLeaveMap(entered: boolean) {
-    this.store.dispatch(new CursorActions.SetVisible(entered));
+    this.store.dispatch(CursorActions.setVisible({visible: entered}));
   }
 }

@@ -1,31 +1,24 @@
-import { Action } from '@ngrx/store';
-
+import { createAction, props } from '@ngrx/store';
 import { MangolLayer } from './../../classes/Layer';
 import VectorLayer from 'ol/layer/Vector';
+import { MangolVectorLayer } from '../../classes/VectorLayer';
 
-export const SET_LAYERS = '[Layers] Set Layers';
-export const ADD_LAYER = '[Layers] Add Layer';
-export const REMOVE_LAYER = '[Layers] Remove Layer';
-export const SET_MEASURE_LAYER = '[Layers] Set Measure Layer';
+export const setLayers = createAction(
+  '[Layers] Set Layers',
+  props<{ layers: MangolLayer[] }>()
+);
 
-export class SetLayers implements Action {
-  readonly type = SET_LAYERS;
-  constructor(public payload: MangolLayer[]) {}
-}
+export const addLayer = createAction(
+  '[Layers] Add Layer',
+  props<{ layer: MangolLayer }>()
+);
 
-export class AddLayer implements Action {
-  readonly type = ADD_LAYER;
-  constructor(public payload: MangolLayer) {}
-}
+export const removeLayer = createAction(
+  '[Layers] Remove Layer',
+  props<{ layerName: string }>()
+);
 
-export class RemoveLayer implements Action {
-  readonly type = REMOVE_LAYER;
-  constructor(public payload: string) {}
-}
-
-export class SetMeasureLayer implements Action {
-  readonly type = SET_MEASURE_LAYER;
-  constructor(public payload: VectorLayer) {}
-}
-
-export type LayersActions = SetLayers | SetMeasureLayer | AddLayer | RemoveLayer;
+export const setMeasureLayer = createAction(
+  '[Layers] Set Measure Layer',
+  props<{ layer: MangolVectorLayer }>()
+);

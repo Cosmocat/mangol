@@ -14,6 +14,7 @@ import * as FeatureinfoActions from './../../../../store/featureinfo/featureinfo
 import { FeatureinfoDictionary } from './../../../../store/featureinfo/featureinfo.reducers';
 import * as fromMangol from './../../../../store/mangol.reducers';
 import { FeatureinfoService } from './../../featureinfo.service';
+import { MapService } from '../../../map/map.service';
 
 @Component({
   selector: 'mangol-featureinfo-results',
@@ -36,6 +37,7 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<fromMangol.MangolState>,
     private featureinfoService: FeatureinfoService,
+    private mapService: MapService,
     public snackBar: MatSnackBar,
     public dialog: MatDialog
   ) {}
@@ -48,27 +50,26 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
 
     this.combinedSubscription = combineLatest(this.tab$, this.layer$).subscribe(
       ([selectedModule, layer]) => {
-        this.store.dispatch(new FeatureinfoActions.SetResultsItems([]));
+        this.store.dispatch(FeatureinfoActions.setResultsItems({resultItems: []}));
         if (selectedModule === 'featureinfo') {
           if (layer !== null) {
-            this.store
-              .select(fromMangol.getMap)
-              .pipe(take(1))
-              .subscribe(m => {
-                this.store.dispatch(
-                  new CursorActions.SetMode({
+            // this.store
+            //   .select(fromMangol.getMap)
+            //   .pipe(take(1))
+            //   .subscribe(m => {
+              this.store.dispatch(CursorActions.setMode({ mode: {
                     text: this.dictionary.clickOnMap,
                     cursor: 'crosshair'
-                  })
+                  }})
                 );
-                this.store.dispatch(new CursorActions.SetVisible(true));
+              this.store.dispatch(CursorActions.setVisible({visible: true}));
                 if (this.clickFunction !== null) {
-                  m.un('singleclick', this.clickFunction);
+                  this.mapService.map.un('singleclick', this.clickFunction);
                 }
                 this.clickFunction = evt =>
-                  this._createClickFunction(evt, layer, m);
-                m.on('singleclick', this.clickFunction);
-              });
+                  this._createClickFunction(evt, layer, this.mapService.map);
+                this.mapService.map.on('singleclick', this.clickFunction);
+              // });
           } else {
             this._removeClickFunction();
           }
@@ -80,14 +81,14 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.store.dispatch(new CursorActions.ResetMode());
+    this.store.dispatch(CursorActions.resetMode());
     this.resultsLayer$
       .pipe(
         filter(r => r !== null),
         take(1)
       )
       .subscribe(r => {
-        this.store.dispatch(new FeatureinfoActions.SetResultsItems([]));
+        this.store.dispatch(FeatureinfoActions.setResultsItems({resultItems: []}));
         r.getSource().clear();
       });
     if (this.combinedSubscription) {
@@ -104,11 +105,11 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
         .select(fromMangol.getMap)
         .pipe(take(1))
         .subscribe(m => {
-          m.un('singleclick', this.clickFunction);
+          this.mapService.map.un('singleclick', this.clickFunction);
           this.clickFunction = null;
         });
     }
-    this.store.dispatch(new CursorActions.ResetMode());
+    this.store.dispatch(CursorActions.resetMode());
   }
 
   /**
@@ -126,7 +127,7 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
           m.removeLayer(resultsLayer);
         } catch (error) {}
         resultsLayer.getSource().clear();
-        this.store.dispatch(new FeatureinfoActions.SetResultsItems([]));
+        this.store.dispatch(FeatureinfoActions.setResultsItems({resultItems: []}));
         m.addLayer(resultsLayer);
         const coords = <[number, number]>evt.coordinate;
         switch (layer.layer['type']) {
@@ -146,9 +147,7 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
                   )
                   .subscribe(
                     features => {
-                      this.store.dispatch(
-                        new FeatureinfoActions.SetResultsItems(features)
-                      );
+                      this.store.dispatch(FeatureinfoActions.setResultsItems({resultItems: features}));
                       this._openSnackBar(features.length);
                     },
                     error => {
@@ -165,9 +164,7 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
                 hitTolerance: 5
               }
             );
-            this.store.dispatch(
-              new FeatureinfoActions.SetResultsItems(vectorFeatures)
-            );
+            this.store.dispatch(FeatureinfoActions.setResultsItems({resultItems: vectorFeatures}));
             this._openSnackBar(vectorFeatures.length);
             break;
           default:
@@ -274,13 +271,8 @@ export class FeatureinfoResultsComponent implements OnInit, OnDestroy {
    * @param feature
    */
   zoomToFeature(feature: Feature) {
-    this.store
-      .select(fromMangol.getMap)
-      .pipe(take(1))
-      .subscribe(m => {
-        m.getView().fit(feature.getGeometry().getExtent(), {
-          duration: 500
-        });
-      });
+    this.mapService.map.getView().fit(feature.getGeometry().getExtent(), {
+      duration: 500
+    });
   }
 }

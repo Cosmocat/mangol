@@ -1,4 +1,5 @@
 import * as LayertreeActions from './layertree.actions';
+import { createReducer, on } from '@ngrx/store';
 
 export interface LayertreeDictionary {
   groups?: string;
@@ -36,22 +37,28 @@ const initialState: State = {
   }
 };
 
-export function layertreeReducer(
-  state = initialState,
-  action: LayertreeActions.LayertreeActions
-) {
-  switch (action.type) {
-    case LayertreeActions.HAS_LAYERTREE:
-      return { ...state, hasLayertree: action.payload };
-    case LayertreeActions.SET_DISABLED:
-      return { ...state, disabled: action.payload };
-    case LayertreeActions.SET_TITLE:
-      return { ...state, title: action.payload };
-    case LayertreeActions.SET_DICTIONARY:
-      return { ...state, dictionary: action.payload };
-    case LayertreeActions.SHOW_LAYERGROUP_BADGES:
-      return { ...state, showLayergroupBadges: action.payload };
-    default:
-      return state;
-  }
-}
+export const layertreeReducer = createReducer(
+  initialState,
+  on(LayertreeActions.hasLayertree, (state, { hasLayertree }) => {
+    return { ...state, hasLayertree: hasLayertree };
+  }),
+  on(LayertreeActions.setDisabled, (state, { disabled }) => {
+    return { ...state, disabled: disabled };
+  }),
+  on(LayertreeActions.setTitle, (state, { title }) => {
+    return { ...state, title: title };
+  }),
+  on(LayertreeActions.setDictionary, (state, { dictionary }) => {
+    const dict = { ...state.dictionary };
+      for (const key in dictionary) {
+        if (dictionary.hasOwnProperty(key)) {
+          dict[key] = dictionary[key];
+        }
+      }
+      return { ...state, dictionary: dict };
+  }),
+  on(LayertreeActions.showLayergroupBadges, (state, { showBadges }) => {
+    return { ...state, showLayergroupBadges: showBadges };
+  }),
+);
+

@@ -14,6 +14,8 @@ import { filter } from 'rxjs/operators';
 import { CursorMode } from '../../../interfaces/cursor-mode';
 import * as CursorActions from './../../../store/cursor/cursor.actions';
 import * as fromMangol from './../../../store/mangol.reducers';
+import { MangolConfigMap } from '../../../interfaces/config-map.interface';
+import { MapService } from '../../map/map.service';
 
 @Component({
   selector: 'mangol-cursor',
@@ -21,7 +23,7 @@ import * as fromMangol from './../../../store/mangol.reducers';
   styleUrls: ['./cursor.component.scss']
 })
 export class CursorComponent implements OnInit, OnDestroy {
-  map$: Observable<Map>;
+  map$: Observable<MangolConfigMap>;
 
   mode: CursorMode = null;
   layer: VectorLayer = null;
@@ -30,7 +32,7 @@ export class CursorComponent implements OnInit, OnDestroy {
   modeSubscription: Subscription;
   layerSubscription: Subscription;
 
-  constructor(private store: Store<fromMangol.MangolState>) {
+  constructor(private store: Store<fromMangol.MangolState>, private mapService: MapService) {
     this.map$ = this.store.select(fromMangol.getMap);
 
     this.modeSubscription = this.store
@@ -48,9 +50,9 @@ export class CursorComponent implements OnInit, OnDestroy {
         zIndex: 1000,
         style: feat => this.setStyle(<Feature>feat)
       });
-      this.store.dispatch(new CursorActions.SetLayer(layer));
-      m.addLayer(layer);
-      m.on('pointermove', evt => this.onMouseMove(evt));
+      this.store.dispatch(CursorActions.setLayer({layer}));
+      this.mapService.map.addLayer(layer);
+      this.mapService.map.on('pointermove', evt => this.onMouseMove(evt));
     });
 
     this.combinedSubscription = combineLatest(

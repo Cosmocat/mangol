@@ -25,6 +25,6 @@ export class SidebarButtonComponent implements OnInit {
   ngOnInit() {}
 
   toggleSidebar() {
-    this.store.dispatch(new SidebarActions.Toggle());
+    this.store.dispatch(SidebarActions.toggle());
   }
 }

@@ -1,47 +1,35 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
-export const TOGGLE = '[Sidebar] Toggle';
-export const SET_HAS_SIDEBAR = '[Sidebar] Set Has Sidebar';
-export const SET_MODE = '[Sidebar] Set Mode';
-export const SET_COLLAPSIBLE = '[Sidebar] Set Collapsible';
-export const SET_OPENED = '[Sidebar] Set Opened';
-export const SET_TITLE = '[Sidebar] Set Title';
-export const SET_SELECTED_MODULE = '[Sidebar] Set Selected Module';
+export const toggle = createAction(
+  '[Sidebar] Toggle'
+);
 
-export class Toggle implements Action {
-  readonly type = TOGGLE;
-  constructor() {}
-}
-export class SetHasSidebar implements Action {
-  readonly type = SET_HAS_SIDEBAR;
-  constructor(public payload: boolean) {}
-}
-export class SetMode implements Action {
-  readonly type = SET_MODE;
-  constructor(public payload: string) {}
-}
-export class SetCollapsible implements Action {
-  readonly type = SET_COLLAPSIBLE;
-  constructor(public payload: boolean) {}
-}
-export class SetOpened implements Action {
-  readonly type = SET_OPENED;
-  constructor(public payload: boolean) {}
-}
-export class SetTitle implements Action {
-  readonly type = SET_TITLE;
-  constructor(public payload: string) {}
-}
-export class SetSelectedModule implements Action {
-  readonly type = SET_SELECTED_MODULE;
-  constructor(public payload: string) {}
-}
+export const setHasSidebar = createAction(
+  '[Sidebar] Set Has Sidebar',
+  props<{ hasSidebar: boolean }>()
+);
 
-export type SidebarActions =
-  | Toggle
-  | SetHasSidebar
-  | SetMode
-  | SetCollapsible
-  | SetOpened
-  | SetTitle
-  | SetSelectedModule;
+export const setMode = createAction(
+  '[Sidebar] Set Mode',
+  props<{ mode: string }>()
+);
+
+export const setCollapsible = createAction(
+  '[Sidebar] Set Collapsible',
+  props<{ collapsible: boolean }>()
+);
+
+export const setOpened = createAction(
+  '[Sidebar] Set Opened',
+  props<{ opened: boolean }>()
+);
+
+export const setTitle = createAction(
+  '[Sidebar] Set Title',
+  props<{ title: string }>()
+);
+
+export const setSelectedModule = createAction(
+  '[Sidebar] Set Selected Module',
+  props<{ selectedModule: string }>()
+);

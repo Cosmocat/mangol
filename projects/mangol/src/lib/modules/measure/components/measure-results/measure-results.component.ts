@@ -15,6 +15,7 @@ import * as fromMangol from '../../../../store/mangol.reducers';
 import { MeasureMode } from '../../../../store/measure/measure.reducers';
 import { MeasureService } from '../../measure.service';
 import { MeasureDictionary } from './../../../../store/measure/measure.reducers';
+import { MapService } from '../../../map/map.service';
 
 @Component({
   selector: 'mangol-measure-results',
@@ -24,7 +25,7 @@ import { MeasureDictionary } from './../../../../store/measure/measure.reducers'
 export class MeasureResultsComponent implements OnInit, OnDestroy {
   @Input()
   dictionary: MeasureDictionary;
-  map$: Observable<Map>;
+  map: Map;
   layer$: Observable<VectorLayer>;
   measureMode$: Observable<MeasureMode>;
   cursorText$: Observable<string>;
@@ -37,11 +38,10 @@ export class MeasureResultsComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromMangol.MangolState>,
-    private measureService: MeasureService
+    private measureService: MeasureService,
+    private mapService: MapService
   ) {
-    this.map$ = this.store
-      .select(fromMangol.getMap)
-      .pipe(filter(m => m !== null));
+    this.map = this.mapService.map;
     this.layer$ = this.store
       .select(fromMangol.getMeasureLayer)
       .pipe(filter(l => l !== null));
@@ -53,13 +53,12 @@ export class MeasureResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.combinedSubscription = combineLatest(
-      this.map$,
       this.layer$,
       this.measureMode$
-    ).subscribe(([m, layer, mode]) => {
-      const mapLayers = m.getLayers().getArray();
+    ).subscribe(([layer, mode]) => {
+      const mapLayers = this.map.getLayers().getArray();
       let maxZIndex = mapLayers.length - 1;
-      m.getLayers()
+      this.map.getLayers()
         .getArray()
         .forEach(l => {
           if (l !== layer) {
@@ -68,17 +67,18 @@ export class MeasureResultsComponent implements OnInit, OnDestroy {
         });
       layer.setZIndex(maxZIndex + 1);
       layer.getSource().clear();
-      this._activateDraw(m, layer, mode);
+      this._activateDraw(this.map, layer, mode);
     });
   }
 
   ngOnDestroy() {
-    combineLatest(this.map$, this.layer$)
+    this.store
+      .select(fromMangol.getMeasureLayer)
       .pipe(take(1))
-      .subscribe(([m, layer]) => {
-        this._deactivateDraw(m, layer);
+      .subscribe(layer => {
+        this._deactivateDraw(this.map, layer);
       });
-    this.store.dispatch(new CursorActions.ResetMode());
+    this.store.dispatch(CursorActions.resetMode());
     if (this.combinedSubscription) {
       this.combinedSubscription.unsubscribe();
     }
@@ -96,20 +96,18 @@ export class MeasureResultsComponent implements OnInit, OnDestroy {
       (mode.type === 'radius'
         ? this.dictionary.drawStartTextRadius
         : this.dictionary.drawStartText) + '.';
-    this.store.dispatch(
-      new CursorActions.SetMode({
-        text: this.initialText,
+    this.store.dispatch(CursorActions.setMode({mode: {
+        text: this.dictionary.clickOnMap,
         cursor: 'crosshair'
-      })
+      }})
     );
     this.displayValue = this.initialText;
     this.draw.on('drawstart', (e: any) => {
       layer.getSource().clear();
-      this.store.dispatch(
-        new CursorActions.SetMode({
-          text: this.initialText,
+      this.store.dispatch(CursorActions.setMode({mode: {
+          text: this.dictionary.clickOnMap,
           cursor: 'crosshair'
-        })
+        }})
       );
       this.displayValue = null;
       const feature: Feature = e.feature;
@@ -160,11 +158,10 @@ export class MeasureResultsComponent implements OnInit, OnDestroy {
           default:
             break;
         }
-        this.store.dispatch(
-          new CursorActions.SetMode({
+        this.store.dispatch(CursorActions.setMode({ mode: {
             text: `${displayValue}\n${this.initialText}`,
             cursor: 'crosshair'
-          })
+          }})
         );
         this.displayValue = displayValue;
       });
@@ -172,21 +169,19 @@ export class MeasureResultsComponent implements OnInit, OnDestroy {
 
     this.draw.on('drawend', (e: DrawEvent) => {
       e.feature.setProperties({ text: this.displayValue });
-      this.store.dispatch(
-        new CursorActions.SetMode({
+      this.store.dispatch(CursorActions.setMode({mode: {
           text: this.dictionary.clickOnMap,
           cursor: 'crosshair'
-        })
+        }})
       );
     });
 
     this.draw.setActive(true);
     map.addInteraction(this.draw);
-    this.store.dispatch(
-      new CursorActions.SetMode({
+    this.store.dispatch(CursorActions.setMode({mode: {
         text: this.dictionary.clickOnMap,
         cursor: 'crosshair'
-      })
+      }})
     );
     this.displayValue = this.dictionary.clickOnMap;
   }

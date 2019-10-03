@@ -11,7 +11,7 @@ export interface MangolConfigLayerColumn {
 
 export interface MangolConfigLayer {
   name: string;
-  layer: any;
+  layer: Layer;
   visible?: boolean;
   opacity?: number;
   description?: string;

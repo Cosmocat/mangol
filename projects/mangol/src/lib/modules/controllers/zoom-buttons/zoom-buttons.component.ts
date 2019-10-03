@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 
 import { shownStateTrigger } from '../controllers.animations';
 import { MangolControllersZoomOptions } from './../../../interfaces/config-map-controllers.interface';
+import { MapService } from '../../map/map.service';
 
 @Component({
   selector: 'mangol-zoom-buttons',
@@ -18,33 +19,23 @@ export class ZoomButtonsComponent implements OnInit {
   animationDuration = 500;
   zoom$: Observable<MangolControllersZoomOptions>;
 
-  constructor(private store: Store<fromMangol.MangolState>) {
+  constructor(private store: Store<fromMangol.MangolState>, private mapService: MapService) {
     this.zoom$ = this.store.select(fromMangol.getControllersZoom);
   }
 
   ngOnInit() {}
 
   zoomIn() {
-    this.store
-      .select(fromMangol.getMap)
-      .pipe(take(1))
-      .subscribe((m: Map) => {
-        m.getView().animate({
-          zoom: m.getView().getZoom() + 1,
-          duration: this.animationDuration
-        });
-      });
+    this.mapService.map.getView().animate({
+      zoom: this.mapService.map.getView().getZoom() + 1,
+      duration: this.animationDuration
+    });
   }
 
   zoomOut() {
-    this.store
-      .select(fromMangol.getMap)
-      .pipe(take(1))
-      .subscribe((m: Map) => {
-        m.getView().animate({
-          zoom: m.getView().getZoom() - 1,
-          duration: this.animationDuration
-        });
-      });
+    this.mapService.map.getView().animate({
+      zoom: this.mapService.map.getView().getZoom() - 1,
+      duration: this.animationDuration
+    });
   }
 }

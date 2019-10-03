@@ -12,6 +12,7 @@ import {
 } from './../../interfaces/config-toolbar.interface';
 import * as fromMangol from './../../store/mangol.reducers';
 import * as PrintActions from './../../store/print/print.actions';
+import { MapService } from '../map/map.service';
 
 declare var jsPDF: any;
 export interface Layout {
@@ -42,7 +43,8 @@ export class PrintComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromMangol.MangolState>,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private mapService: MapService
   ) {
     this.printConfig$ = this.store.select(fromMangol.getPrintConfig);
     this.dictionary$ = this.store.select(fromMangol.getPrintDictionary);
@@ -55,18 +57,16 @@ export class PrintComponent implements OnInit, OnDestroy {
 
     this.printConfigSubscription = this.printConfig$.subscribe(config => {
       if (config.hasOwnProperty('dictionary')) {
-        this.store.dispatch(new PrintActions.SetDictionary(config.dictionary));
+        this.store.dispatch(PrintActions.setDictionary({dictionary: config.dictionary}));
       }
       if (config.hasOwnProperty('sizes')) {
-        this.store.dispatch(new PrintActions.SetSizes(config.sizes));
+        this.store.dispatch(PrintActions.setSizes({sizes: config.sizes}));
       }
       if (config.hasOwnProperty('resolutions')) {
-        this.store.dispatch(
-          new PrintActions.SetResolutions(config.resolutions)
-        );
+        this.store.dispatch(PrintActions.setResolutions({resolutions: config.resolutions}));
       }
       if (config.hasOwnProperty('layouts')) {
-        this.store.dispatch(new PrintActions.SetLayouts(config.layouts));
+        this.store.dispatch(PrintActions.setLayouts({layouts: config.layouts}));
       }
     });
   }
@@ -109,9 +109,9 @@ export class PrintComponent implements OnInit, OnDestroy {
             resolution) /
             25.4
         );
-        const mapSize = m.getSize();
-        const extent = m.getView().calculateExtent(mapSize);
-        m.once('rendercomplete', (event: any) => {
+        const mapSize = this.mapService.map.getSize();
+        const extent = this.mapService.map.getView().calculateExtent(mapSize);
+        this.mapService.map.once('rendercomplete', (event: any) => {
           const canvas = event.context.canvas;
           const data = canvas.toDataURL('image/jpeg');
           const pdf = new jsPDF(layout.type, undefined, size.id);
@@ -124,14 +124,14 @@ export class PrintComponent implements OnInit, OnDestroy {
             layout.type === 'landscape' ? size.height : size.width
           );
           pdf.save('map.pdf');
-          m.setSize(mapSize);
-          m.getView().fit(extent, { size: mapSize });
+          this.mapService.map.setSize(mapSize);
+          this.mapService.map.getView().fit(extent, { size: mapSize });
           this.printInProgress = false;
         });
         const printSize: [number, number] = [width, height];
-        m.setSize(printSize);
-        m.getView().fit(extent, { size: printSize });
-        m.renderSync();
+        this.mapService.map.setSize(printSize);
+        this.mapService.map.getView().fit(extent, { size: printSize });
+        this.mapService.map.renderSync();
       });
   }
 
@@ -140,11 +140,7 @@ export class PrintComponent implements OnInit, OnDestroy {
    * @param evt
    */
   onLayoutChange(evt: MatSelectChange) {
-    this.store.dispatch(
-      new PrintActions.SetSelectedLayout(
-        !!evt.value ? <PrintLayout>evt.value : null
-      )
-    );
+    this.store.dispatch(PrintActions.setSelectedLayout({selectedLayout: !!evt.value ? <PrintLayout>evt.value : null}));
   }
 
   /**
@@ -152,11 +148,7 @@ export class PrintComponent implements OnInit, OnDestroy {
    * @param evt
    */
   onSizeChange(evt: MatSelectChange) {
-    this.store.dispatch(
-      new PrintActions.SetSelectedSize(
-        !!evt.value ? <PrintSize>evt.value : null
-      )
-    );
+    this.store.dispatch(PrintActions.setSelectedSize({selectedSize: !!evt.value ? <PrintSize>evt.value : null}));
   }
 
   /**
@@ -164,10 +156,6 @@ export class PrintComponent implements OnInit, OnDestroy {
    * @param evt
    */
   onResolutionChange(evt: MatSelectChange) {
-    this.store.dispatch(
-      new PrintActions.SetSelectedResolution(
-        !!evt.value ? <number>evt.value : null
-      )
-    );
+    this.store.dispatch(PrintActions.setSelectedResolution({selectedResolution: !!evt.value ? <number>evt.value : null}));
   }
 }

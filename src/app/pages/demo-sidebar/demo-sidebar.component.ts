@@ -8,6 +8,8 @@ import { AppService } from '../../app.service';
 import { MangolConfig } from './../../../../projects/mangol/src/lib/interfaces/config.interface';
 import { MangolService } from './../../../../projects/mangol/src/lib/mangol.service';
 import { code } from './code';
+import { MapService } from 'projects/mangol/src/lib/modules/map/map.service';
+
 
 @Component({
   selector: 'app-demo-sidebar',
@@ -22,7 +24,8 @@ export class DemoSidebarComponent implements OnInit, OnDestroy {
 
   constructor(
     private appService: AppService,
-    private mangolService: MangolService
+    private mangolService: MangolService,
+    private mapService: MapService
   ) {
     this.sidebarOpenedSubscription = this.appService.sidebarOpenedSubject.subscribe(
       opened => {
@@ -34,7 +37,7 @@ export class DemoSidebarComponent implements OnInit, OnDestroy {
             )
             .subscribe(m => {
               setTimeout(() => {
-                m.updateSize();
+                this.mapService.map.updateSize();
               }, 500);
             });
         }
@@ -46,14 +49,14 @@ export class DemoSidebarComponent implements OnInit, OnDestroy {
     this.mangolConfig = {
       map: {
         target: 'mangol-demo-sidebar',
-        view: new View({
+        view: {
           projection: 'EPSG:900913',
           center: fromLonLat(
             [19.3956393810065, 47.168464955013],
             'EPSG:900913'
           ),
           zoom: 4
-        })
+        }
       },
       sidebar: {
         collapsible: true,

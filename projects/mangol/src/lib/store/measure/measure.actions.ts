@@ -1,36 +1,27 @@
 import { MeasureDictionary, MeasureMode } from './measure.reducers';
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
-export const HAS_MEASURE = '[Measure] Has Measure';
-export const SET_DISABLED = '[Measure] Set Disabled';
-export const SET_TITLE = '[Measure] Set Title';
-export const SET_DICTIONARY = '[Measure] Set Dictionary';
-export const SET_MODE = '[Measure] Set Mode';
+export const hasMeasure = createAction(
+  '[Measure] Has Measure',
+  props<{ hasMeasure: boolean }>()
+);
 
-export class HasMeasure implements Action {
-  readonly type = HAS_MEASURE;
-  constructor(public payload: boolean) {}
-}
-export class SetDisabled implements Action {
-  readonly type = SET_DISABLED;
-  constructor(public payload: boolean) {}
-}
-export class SetTitle implements Action {
-  readonly type = SET_TITLE;
-  constructor(public payload: string) {}
-}
-export class SetDictionary implements Action {
-  readonly type = SET_DICTIONARY;
-  constructor(public payload: MeasureDictionary) {}
-}
-export class SetMode implements Action {
-  readonly type = SET_MODE;
-  constructor(public payload: MeasureMode) {}
-}
+export const setDisabled = createAction(
+  '[Measure] Set Disabled',
+  props<{ disabled: boolean }>()
+);
 
-export type MeasureActions =
-  | HasMeasure
-  | SetDisabled
-  | SetTitle
-  | SetDictionary
-  | SetMode;
+export const setTitle = createAction(
+  '[Measure] Set Title',
+  props<{ title: string }>()
+);
+
+export const setDictionary = createAction(
+  '[Measure] Set Dictionary',
+  props<{ dictionary: MeasureDictionary }>()
+);
+
+export const setMode = createAction(
+  '[Measure] Set Mode',
+  props<{ mode: MeasureMode }>()
+);

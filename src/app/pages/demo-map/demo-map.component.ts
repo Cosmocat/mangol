@@ -5,6 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import { AppService } from '../../app.service';
 import { MangolService } from './../../../../projects/mangol/src/lib/mangol.service';
 import { code } from './code';
+import { MapService } from 'projects/mangol/src/lib/modules/map/map.service';
 
 @Component({
   selector: 'app-demo-map',
@@ -17,7 +18,8 @@ export class DemoMapComponent implements OnInit, OnDestroy {
 
   constructor(
     private appService: AppService,
-    private mangolService: MangolService
+    private mangolService: MangolService,
+    private mapService: MapService
   ) {
     this.sidebarOpenedSubscription = this.appService.sidebarOpenedSubject.subscribe(
       opened => {
@@ -29,7 +31,7 @@ export class DemoMapComponent implements OnInit, OnDestroy {
             )
             .subscribe(m => {
               setTimeout(() => {
-                m.updateSize();
+                this.mapService.map.updateSize();
               }, 500);
             });
         }

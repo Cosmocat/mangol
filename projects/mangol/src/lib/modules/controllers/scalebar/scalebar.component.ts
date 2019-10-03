@@ -5,6 +5,7 @@ import * as fromMangol from './../../../store/mangol.reducers';
 import ScaleLine from 'ol/control/ScaleLine';
 import Map from 'ol/Map';
 import { Subscription } from 'rxjs';
+import { MapService } from '../../map/map.service';
 
 @Component({
   selector: 'mangol-scalebar',
@@ -14,23 +15,14 @@ import { Subscription } from 'rxjs';
 export class ScalebarComponent implements OnInit, AfterViewInit, OnDestroy {
   target: string = null;
 
-  map: Map = null;
-
+  map: Map;
   mapSubscription: Subscription;
 
-  constructor(private store: Store<fromMangol.MangolState>) {}
+  constructor(private store: Store<fromMangol.MangolState>, private mapService: MapService) {}
 
   ngOnInit() {
-    this.store
-      .select(fromMangol.getMap)
-      .pipe(
-        filter(m => m !== null),
-        take(1)
-      )
-      .subscribe(m => {
-        this.map = m;
-        this.target = `${this.map.getTarget()}-scale-line`;
-      });
+    this.map = this.mapService.map;
+    this.target = `${this.map.getTarget()}-scale-line`;
   }
 
   ngAfterViewInit() {

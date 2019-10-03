@@ -1,11 +1,9 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 import { MangolConfig } from '../../interfaces/config.interface';
 
-export const SET_CONFIG = '[Config] Set Config';
 
-export class SetConfig implements Action {
-  readonly type = SET_CONFIG;
-  constructor(public payload: MangolConfig) {}
-}
+export const setConfig = createAction(
+  '[Config] Set Config',
+  props<{ config: MangolConfig }>()
+);
 
-export type ConfigActions = SetConfig;

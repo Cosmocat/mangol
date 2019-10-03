@@ -1,5 +1,6 @@
 import { PrintDictionary } from './../../interfaces/config-toolbar.interface';
 import * as PrintActions from './print.actions';
+import { createReducer, on } from '@ngrx/store';
 
 export interface PrintLayout {
   type: 'landscape' | 'portrait';
@@ -59,38 +60,42 @@ const initialState: State = {
   }
 };
 
-export function printReducer(
-  state = initialState,
-  action: PrintActions.PrintActions
-) {
-  switch (action.type) {
-    case PrintActions.HAS_PRINT:
-      return { ...state, hasPrint: action.payload };
-    case PrintActions.SET_DISABLED:
-      return { ...state, disabled: action.payload };
-    case PrintActions.SET_TITLE:
-      return { ...state, title: action.payload };
-    case PrintActions.SET_RESOLUTIONS:
-      return { ...state, resolutions: action.payload };
-    case PrintActions.SET_LAYOUTS:
-      return { ...state, layouts: action.payload };
-    case PrintActions.SET_SIZES:
-      return { ...state, sizes: action.payload };
-    case PrintActions.SET_DICTIONARY:
-      const dict = { ...state.dictionary };
-      for (const key in action.payload) {
-        if (action.payload.hasOwnProperty(key)) {
-          dict[key] = action.payload[key];
+export const printReducer = createReducer(
+  initialState,
+  on(PrintActions.hasPrint, (state, { hasPrint }) => {
+    return { ...state, hasPrint: hasPrint };
+  }),
+  on(PrintActions.setDisabled, (state, { disabled }) => {
+    return { ...state, disabled: disabled };
+  }),
+  on(PrintActions.setTitle, (state, { title }) => {
+    return { ...state, title: title };
+  }),
+  on(PrintActions.setDictionary, (state, { dictionary }) => {
+    const dict = { ...state.dictionary };
+      for (const key in dictionary) {
+        if (dictionary.hasOwnProperty(key)) {
+          dict[key] = dictionary[key];
         }
       }
       return { ...state, dictionary: dict };
-    case PrintActions.SET_SELECTED_LAYOUT:
-      return { ...state, selectedLayout: action.payload };
-    case PrintActions.SET_SELECTED_RESOLUTION:
-      return { ...state, selectedResolution: action.payload };
-    case PrintActions.SET_SELECTED_SIZE:
-      return { ...state, selectedSize: action.payload };
-    default:
-      return state;
-  }
-}
+  }),
+  on(PrintActions.setLayouts, (state, { layouts }) => {
+    return { ...state, layouts: layouts };
+  }),
+  on(PrintActions.setResolutions, (state, { resolutions }) => {
+    return { ...state, resolutions: resolutions };
+  }),
+  on(PrintActions.setSizes, (state, { sizes }) => {
+    return { ...state, sizes: sizes };
+  }),
+  on(PrintActions.setSelectedLayout, (state, { selectedLayout }) => {
+    return { ...state, selectedLayout: selectedLayout };
+  }),
+  on(PrintActions.setSelectedResolution, (state, { selectedResolution }) => {
+    return { ...state, selectedResolution: selectedResolution };
+  }),
+  on(PrintActions.setSelectedSize, (state, { selectedSize }) => {
+    return { ...state, selectedSize: selectedSize };
+  }),
+);

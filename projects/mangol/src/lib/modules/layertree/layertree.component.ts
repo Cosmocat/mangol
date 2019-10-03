@@ -42,7 +42,7 @@ export class LayertreeComponent implements OnInit, OnDestroy, AfterViewInit {
       .select(fromMangol.getSidebarSelectedModule)
       .pipe(filter(module => module === 'layertree'))
       .subscribe(module => {
-        this.store.dispatch(new CursorActions.ResetMode());
+        this.store.dispatch(CursorActions.resetMode());
       });
 
       this.configSub = this.store

@@ -12,6 +12,7 @@ import { StyleService } from '../_shared/shared/services/style.service';
 import * as FeatureinfoActions from './../../store/featureinfo/featureinfo.actions';
 import { FeatureinfoDictionary } from './../../store/featureinfo/featureinfo.reducers';
 import * as fromMangol from './../../store/mangol.reducers';
+import { MapService } from '../map/map.service';
 
 @Component({
   selector: 'mangol-featureinfo',
@@ -21,7 +22,7 @@ import * as fromMangol from './../../store/mangol.reducers';
 export class FeatureinfoComponent implements OnInit, OnDestroy {
   layers$: Observable<MangolLayer[]>;
   selectedLayer$: Observable<MangolLayer>;
-  map$: Observable<Map>;
+  map: Map;
   resultsLayer$: Observable<VectorLayer>;
   dictionary$: Observable<FeatureinfoDictionary>;
 
@@ -29,13 +30,14 @@ export class FeatureinfoComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromMangol.MangolState>,
-    private styleService: StyleService
+    private styleService: StyleService,
+    private mapService: MapService
   ) {
     // Get the queryable layers
     this.layers$ = this.store.select(fromMangol.getQueryableLayers);
     // Get the selected layer
     this.selectedLayer$ = this.store.select(fromMangol.getFeatureSelectedLayer);
-    this.map$ = this.store.select(fromMangol.getMap);
+    this.map = this.mapService.map;
     this.resultsLayer$ = this.store.select(fromMangol.getFeatureResultsLayer);
     this.dictionary$ = this.store.select(fromMangol.getFeatureDictionary);
   }
@@ -49,25 +51,18 @@ export class FeatureinfoComponent implements OnInit, OnDestroy {
     });
 
     // Add the resultsLayer to the map
-    this.mapSubscription = this.map$
-      .pipe(filter(m => m !== null))
-      .subscribe(m => {
-        m.addLayer(resultsLayer);
-        this.store.dispatch(
-          new FeatureinfoActions.SetResultsLayer(resultsLayer)
-        );
-      });
+    this.map.addLayer(resultsLayer);
+    this.store.dispatch(FeatureinfoActions.setResultsLayer({resultsLayer}));
   }
 
   ngOnDestroy() {
     // Remove the resultsLayer from the map
     combineLatest(
-      this.map$.pipe(filter(m => m !== null)),
       this.resultsLayer$.pipe(filter(r => r !== null))
     )
       .pipe(take(1))
-      .subscribe(([m, resultsLayer]) => {
-        m.removeLayer(resultsLayer);
+      .subscribe(resultsLayer => {
+        this.map.removeLayer(resultsLayer[0]);
       });
     if (this.mapSubscription) {
       this.mapSubscription.unsubscribe();

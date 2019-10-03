@@ -1,23 +1,23 @@
 import Map from 'ol/Map';
 
 import * as MapActions from './map.actions';
+import { createReducer, on } from '@ngrx/store';
+import { MangolConfigMap } from '../../interfaces/config-map.interface';
 
 export interface State {
-  map: Map;
+  map: MangolConfigMap;
 }
 
 const initialState: State = {
   map: null
 };
 
-export function mapReducer(
-  state = initialState,
-  action: MapActions.MapActions
-) {
-  switch (action.type) {
-    case MapActions.SET_MAP:
-      return { ...state, map: action.payload };
-    default:
-      return state;
-  }
-}
+export const mapReducer = createReducer(
+  initialState,
+  on(MapActions.setMap, (state, { map }) => {
+      return {
+          ...state,
+          map: map
+      };
+  }),
+);
